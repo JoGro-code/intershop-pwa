@@ -11,6 +11,7 @@ import { PasswordReminderUpdate } from 'ish-core/models/password-reminder-update
 import { PasswordReminder } from 'ish-core/models/password-reminder/password-reminder.model';
 import { PaymentInstrument } from 'ish-core/models/payment-instrument/payment-instrument.model';
 import { User } from 'ish-core/models/user/user.model';
+import { OrderListQuery } from 'ish-core/services/order/order.service';
 import { MessagesPayloadType } from 'ish-core/store/core/messages';
 import {
   createCustomerAddress,
@@ -27,7 +28,13 @@ import {
   getDataRequestError,
   getDataRequestLoading,
 } from 'ish-core/store/customer/data-requests';
-import { getOrders, getOrdersLoading, getSelectedOrder, loadOrders } from 'ish-core/store/customer/orders';
+import {
+  getOrders,
+  getOrdersError,
+  getOrdersLoading,
+  getSelectedOrder,
+  loadOrders,
+} from 'ish-core/store/customer/orders';
 import {
   cancelRegistration,
   getSsoRegistrationCancelled,
@@ -163,13 +170,14 @@ export class AccountFacade {
 
   // ORDERS
 
-  orders$() {
-    this.store.dispatch(loadOrders());
+  orders$(query?: OrderListQuery) {
+    this.store.dispatch(loadOrders({ query: query || { limit: 30 } }));
     return this.store.pipe(select(getOrders));
   }
 
   selectedOrder$ = this.store.pipe(select(getSelectedOrder));
   ordersLoading$ = this.store.pipe(select(getOrdersLoading));
+  ordersError$ = this.store.pipe(select(getOrdersError));
 
   // PAYMENT
 
